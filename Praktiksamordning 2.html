@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Praktikplatshanteraren</title>
+    <style>
+        /* Allmän stil */
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --light-gray: #f8f9fa;
+            --dark-gray: #495057;
+            --white: #ffffff;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --success: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark-gray);
+        }
+
+        /* Huvudcontainer */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        /* Fliknavigering */
+        .nav-tabs {
+            display: flex;
+            background: var(--light-gray);
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari and Opera */
+        }
+
+
+        .nav-tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--dark-gray);
+            /*transition: all 0.3s;*/
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .nav-tab.active {
+            background: var(--white);
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Dashboard-kort */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Varningar */
+        .alert {
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background: #fff3cd;
+        }
+
+        .alert.danger {
+            background: #f8d7da;
+            border-left-color: var(--danger);
+        }
+
+        .alert ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+
+        /* Formulär och knappar */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--dark-gray);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        /* Sök och filter */
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-filter input,
+        .search-filter select {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Tabeller */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background: var(--light-gray);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f1f3f5;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        /* Modal-fönster */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: var(--primary-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+        }
+        
+        /* NYTT: Färgprickar */
+        .color-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .color-dot-green { background-color: var(--success); }
+        .color-dot-yellow { background-color: var(--warning); }
+        .color-dot-red { background-color: var(--danger); }
+        .color-dot-blue { background-color: var(--primary-color); }
+
+        /* Animationer */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsivitet */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .nav-tab {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Praktikplatshanteraren</h1>
+            <p>Ett verktyg för Arbetsmarknadsenheten</p>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+            <button class="nav-tab" data-tab="interns">Praktikanter</button>
+            <button class="nav-tab" data-tab="placements">Praktikplatser</button>
+            <button class="nav-tab" data-tab="employers">Arbetsgivare</button>
+            <button class="nav-tab" data-tab="coaches">Coacher</button>
+        </div>
+
+        <div class="content">
+            <div id="dashboard" class="tab-content active">
+                <h2>Översikt</h2>
+                <div id="alerts"></div>
+                <div class="stats-grid" id="statsGrid"></div>
+
+                <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #dee2e6;">
+                    <h2>Datahantering (Backup)</h2>
+                    <p style="margin-bottom: 15px; max-width: 600px;">Här kan du ladda ner all data som en
+                        säkerhetskopia (JSON-fil). Detta är bra att göra regelbundet. Du kan också återställa data från
+                        en sådan fil, men var medveten om att det skriver över all nuvarande information.</p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-success" id="exportBtn">Exportera Data</button>
+                        <button class="btn btn-warning" id="importBtn">Importera Data</button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                    </div>
+                </div>
+            </div>
+
+            <div id="employers" class="tab-content">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                    <h2>Arbetsgivare</h2>
+                    <button class="btn btn-primary" id="addEmployerBtn">+ Ny Arbetsgivare</button>
+                </div>
+                <div class="search-filter">
+                    <input type="text" id="searchEmployer" placeholder="Sök arbetsgivare...">
+                    <select id="filterBranch">
+                        <option value="">Alla branscher</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Företag</th>
+                                <th>Bransch</th>
+                                <th>Kontaktperson</th>
+                                <th>Telefon</th>
+                                <th>E-post</th>
+                                <th>Åtgärder</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employersBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="placements" class="tab-content">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                    <h2>Praktikplatser</h2>
+                    <button class="btn btn-primary" id="addPlacementBtn">+ Ny Praktikplats</button>
+                </div>
+                <div class="search-filter">
+                    <input type="text" id="searchPlacement" placeholder="Sök praktikplats...">
+                    <select id="filterStatus">
+                        <option value="">Alla statusar</option>
+                        <option value="ledig">Ledig</option>
+                        <option value="upptagen">Upptagen</option>
+                    </select>
+                    <select id="filterEmployer">
+                        <option value="">Alla arbetsgivare</option>
+                    </select>
+                    <select id="filterPlacementType">
+                        <option value="">Alla typer</option>
+                        <option value="kommunal">Kommunala</option>
+                        <option value="privat">Privata</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Arbetsgivare</th>
+                                <th>Beskrivning</th>
+                                <th>Antal platser</th>
+                                <th>Lediga</th>
+                                <th>Status</th>
+                                <th>Åtgärder</th>
+                            </tr>
+                        </thead>
+                        <tbody id="placementsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="coaches" class="tab-content">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                    <h2>Coacher</h2>
+                    <button class="btn btn-primary" id="addCoachBtn">+ Ny Coach</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Namn</th>
+                                <th>E-post</th>
+                                <th>Telefon</th>
+                                <th>Antal praktikanter</th>
+                                <th>Åtgärder</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coachesBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="interns" class="tab-content">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                    <h2>Praktikanter</h2>
+                    <button class="btn btn-primary" id="addInternBtn">+ Ny Praktikant</button>
+                </div>
+                <div class="search-filter">
+                    <input type="text" id="searchIntern" placeholder="Sök praktikant...">
+                    <select id="filterCoach">
+                        <option value="">Alla coacher</option>
+                    </select>
+                    <select id="filterInternStatus">
+                        <option value="">Alla statusar</option>
+                        <option value="assigned">Tilldelad plats</option>
+                        <option value="unassigned">Ej tilldelad</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Namn</th>
+                                <th>Coach</th>
+                                <th>Arbetsgivare</th>
+                                <th>Start</th>
+                                <th>Slut</th>
+                                <th>Uppföljning</th>
+                                <th>Åtgärder</th>
+                            </tr>
+                        </thead>
+                        <tbody id="internsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="employerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="employerModalTitle">Ny Arbetsgivare</h2>
+                <button class="close-btn" data-modal="employerModal">&times;</button>
+            </div>
+            <form id="employerForm">
+                <input type="hidden" id="employerId">
+                <div class="form-group"><label>Företagsnamn *</label><input type="text" id="employerName" required>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group"><label>Bransch *</label><input type="text" id="employerBranch" required></div>
+                    <div class="form-group">
+                        <label>Typ av arbetsgivare</label>
+                        <select id="employerType">
+                            <option value="">Välj typ...</option>
+                            <option value="kommunal">Kommunal</option>
+                            <option value="privat">Privat</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Färgkodning (Typ av praktikant)</label>
+                    <select id="employerColorCode">
+                        <option value="">Ingen</option>
+                        <option value="green">Grön (Jobb ready)</option>
+                        <option value="yellow">Gul (Kräver extra handledning)</option>
+                        <option value="red">Röd (Lägre språknivå, språkpraktik)</option>
+                        <option value="blue">Blå (Inför anställning)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Kontaktperson *</label><input type="text" id="employerContact" required>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group"><label>Telefon</label><input type="tel" id="employerPhone"></div>
+                    <div class="form-group"><label>E-post</label><input type="email" id="employerEmail"></div>
+                </div>
+                <div class="form-group"><label>Adress</label><input type="text" id="employerAddress"></div>
+                <div class="form-group"><label>Anteckningar</label><textarea id="employerNotes"></textarea></div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary close-btn" data-modal="employerModal">Avbryt</button>
+                    <button type="submit" class="btn btn-primary">Spara</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="placementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="placementModalTitle">Ny Praktikplats</h2>
+                <button class="close-btn" data-modal="placementModal">&times;</button>
+            </div>
+            <form id="placementForm">
+                <input type="hidden" id="placementId">
+                <div class="form-group"><label>Arbetsgivare *</label><select id="placementEmployer" required></select>
+                </div>
+                <div class="form-group"><label>Beskrivning / Roll *</label><textarea id="placementDescription"
+                        required></textarea></div>
+                <div class="form-group"><label>Antal platser *</label><input type="number" id="placementTotal" min="1"
+                        required></div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary close-btn"
+                        data-modal="placementModal">Avbryt</button>
+                    <button type="submit" class="btn btn-primary">Spara</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="coachModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="coachModalTitle">Ny Coach</h2><button class="close-btn" data-modal="coachModal">&times;</button>
+            </div>
+            <form id="coachForm">
+                <input type="hidden" id="coachId">
+                <div class="form-group"><label>Namn *</label><input type="text" id="coachName" required></div>
+                <div class="form-group"><label>E-post *</label><input type="email" id="coachEmail" required></div>
+                <div class="form-group"><label>Telefon</label><input type="tel" id="coachPhone"></div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary close-btn" data-modal="coachModal">Avbryt</button>
+                    <button type="submit" class="btn btn-primary">Spara</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="internModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="internModalTitle">Ny Praktikant</h2><button class="close-btn"
+                    data-modal="internModal">&times;</button>
+            </div>
+            <form id="internForm">
+                <input type="hidden" id="internId">
+                <div class="form-group"><label>Namn *</label><input type="text" id="internName" required></div>
+                <div class="form-group"><label>Coach *</label><select id="internCoach" required></select></div>
+                <div class="form-group"><label>Praktikplats</label><select id="internPlacement"></select>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group"><label>Startdatum *</label><input type="date" id="internStartDate" required>
+                    </div>
+                    <div class="form-group"><label>Slutdatum *</label><input type="date" id="internEndDate" required>
+                    </div>
+                </div>
+                <div class="form-group"><label>Uppföljningsdatum *</label><input type="date" id="internFollowupDate"
+                        required></div>
+                <div class="form-group"><label>Anteckningar</label><textarea id="internNotes"></textarea></div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary close-btn" data-modal="internModal">Avbryt</button>
+                    <button type="submit" class="btn btn-primary">Spara</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = {
+                // All appdata lagras här
+                data: {
+                    employers: [],
+                    placements: [],
+                    coaches: [],
+                    interns: []
+                },
+
+                // Startfunktion
+                init() {
+                    this.loadData();
+                    this.bindEvents();
+                    this.renderAll();
+                },
+
+                // Ladda data från localStorage (webbläsarens minne)
+                loadData() {
+                    const savedData = localStorage.getItem('praktikData_v2');
+                    if (savedData) {
+                        this.data = JSON.parse(savedData);
+                    } else {
+                        // Exempeldata om ingen data finns
+                        this.data = {
+                            employers: [
+                                { id: 'e1', name: 'Säffle Kommun', branch: 'Offentlig sektor', contact: 'Anna Andersson', phone: '0533-12345', email: 'anna@saffle.se', type: 'kommunal', colorCode: 'yellow' },
+                                { id: 'e2', name: 'Volvo Group', branch: 'Industri', contact: 'Bengt Bengtsson', phone: '0533-54321', email: 'bengt@volvo.se', type: 'privat', colorCode: 'green' },
+                            ],
+                            placements: [
+                                { id: 'p1', employerId: 'e1', description: 'Vaktmästeri', total: 2 },
+                                { id: 'p2', employerId: 'e2', description: 'Montering', total: 3 },
+                                { id: 'p3', employerId: 'e1', description: 'IT-support', total: 1 },
+                            ],
+                            coaches: [
+                                { id: 'c1', name: 'Carin Coach', email: 'carin@ame.se', phone: '070-1112233' },
+                                { id: 'c2', name: 'Carl Coachman', email: 'carl@ame.se', phone: '070-4445566' },
+                            ],
+                            interns: [
+                                { id: 'i1', name: 'Ida Ivarsson', coachId: 'c1', placementId: 'p2', startDate: '2025-09-01', endDate: '2025-11-30', followupDate: '2025-10-15' },
+                                { id: 'i2', name: 'Inge Ingesson', coachId: 'c2', placementId: 'p1', startDate: '2025-09-15', endDate: '2025-12-15', followupDate: '2025-10-01' },
+                                { id: 'i3', name: 'Isak Isaksson', coachId: 'c1', placementId: '', startDate: '2025-10-01', endDate: '2025-12-31', followupDate: '2025-10-20' }
+                            ]
+                        };
+                        this.saveData();
+                    }
+                },
+
+                // Spara data till localStorage
+                saveData() {
+                    localStorage.setItem('praktikData_v2', JSON.stringify(this.data));
+                },
+
+                // Koppla alla event listeners (klick, formulär etc.)
+                bindEvents() {
+                    // Flikbyte
+                    document.querySelectorAll('.nav-tab').forEach(tab => {
+                        tab.addEventListener('click', (e) => this.changeTab(e.target));
+                    });
+
+                    // Öppna modaler
+                    document.getElementById('addEmployerBtn').addEventListener('click', () => this.openModal('employerModal'));
+                    document.getElementById('addPlacementBtn').addEventListener('click', () => this.openModal('placementModal'));
+                    document.getElementById('addCoachBtn').addEventListener('click', () => this.openModal('coachModal'));
+                    document.getElementById('addInternBtn').addEventListener('click', () => this.openModal('internModal'));
+
+                    // Stäng modaler
+                    document.querySelectorAll('.close-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => this.closeModal(e.target.dataset.modal));
+                    });
+
+                    // Spara formulär
+                    document.getElementById('employerForm').addEventListener('submit', e => this.saveEmployer(e));
+                    document.getElementById('placementForm').addEventListener('submit', e => this.savePlacement(e));
+                    document.getElementById('coachForm').addEventListener('submit', e => this.saveCoach(e));
+                    document.getElementById('internForm').addEventListener('submit', e => this.saveIntern(e));
+
+                    // Filter och sök
+                    document.getElementById('searchEmployer').addEventListener('keyup', () => this.renderEmployers());
+                    document.getElementById('filterBranch').addEventListener('change', () => this.renderEmployers());
+                    document.getElementById('searchPlacement').addEventListener('keyup', () => this.renderPlacements());
+                    document.getElementById('filterStatus').addEventListener('change', () => this.renderPlacements());
+                    document.getElementById('filterEmployer').addEventListener('change', () => this.renderPlacements());
+                    document.getElementById('filterPlacementType').addEventListener('change', () => this.renderPlacements()); // NY
+                    document.getElementById('searchIntern').addEventListener('keyup', () => this.renderInterns());
+                    document.getElementById('filterCoach').addEventListener('change', () => this.renderInterns());
+                    document.getElementById('filterInternStatus').addEventListener('change', () => this.renderInterns()); // NY
+
+                    // Backup-knappar
+                    document.getElementById('exportBtn').addEventListener('click', () => this.exportData());
+                    document.getElementById('importBtn').addEventListener('click', () => this.importData());
+                    document.getElementById('importFile').addEventListener('change', (e) => this.handleImport(e));
+                },
+
+                // Byta mellan flikar
+                changeTab(clickedTab) {
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    clickedTab.classList.add('active');
+                    document.getElementById(clickedTab.dataset.tab).classList.add('active');
+                    this.renderAll();
+                },
+
+                // Allmän funktion för att rita om hela gränssnittet
+                renderAll() {
+                    this.renderDashboard();
+                    this.renderEmployers();
+                    this.renderPlacements();
+                    this.renderCoaches();
+                    this.renderInterns();
+                    this.updateFilterDropdowns();
+                },
+
+                // --- HJÄLPFUNKTIONER ---
+                getEmployer(id) { return this.data.employers.find(e => e.id === id) || { name: 'Okänd' }; },
+                getCoach(id) { return this.data.coaches.find(c => c.id === id) || { name: 'Okänd' }; },
+                getPlacement(id) { return this.data.placements.find(p => p.id === id) || { id: null, description: 'Okänd' }; }, // Ändrad: returnerar id: null
+
+                // --- DATAHANTERING (BACKUP) ---
+                exportData() {
+                    const dataString = JSON.stringify(this.data, null, 2);
+                    const blob = new Blob([dataString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    const today = new Date().toISOString().slice(0, 10);
+                    link.download = `praktikdata_backup_${today}.json`;
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                },
+
+                importData() {
+                    document.getElementById('importFile').click();
+                },
+
+                handleImport(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            if (importedData.employers && importedData.placements && importedData.coaches && importedData.interns) {
+                                if (confirm('Är du säker? Detta kommer att skriva över all nuvarande data.')) {
+                                    this.data = importedData;
+                                    this.saveData();
+                                    this.renderAll();
+                                    alert('Data har importerats!');
+                                }
+                            } else {
+                                alert('Fel: Filen verkar inte ha rätt format.');
+                            }
+                        } catch (error) {
+                            alert('Ett fel uppstod när filen skulle läsas.');
+                            console.error("Importfel:", error);
+                        } finally {
+                            event.target.value = null; // Återställ så man kan välja samma fil igen
+                        }
+                    };
+                    reader.readAsText(file);
+                },
+
+                // --- RENDERING AV INNEHÅLL ---
+
+                renderDashboard() {
+                    const totalPlacements = this.data.placements.reduce((sum, p) => sum + p.total, 0);
+                    // Räkna bara praktikanter som har en giltig plats
+                    const occupiedPlacements = this.data.interns.filter(i => i.placementId).length;
+                    const availablePlacements = totalPlacements - occupiedPlacements;
+                    // Räkna alla praktikanter, även de utan plats
+                    const totalInterns = this.data.interns.length;
+
+                    document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card"><h3>Lediga platser</h3><div class="number">${availablePlacements}</div></div>
+                    <div class="stat-card"><h3>Upptagna platser</h3><div class="number">${occupiedPlacements}</div></div>
+                    <div class="stat-card"><h3>Totalt antal platser</h3><div class="number">${totalPlacements}</div></div>
+                    <div class="stat-card"><h3>Totalt antal praktikanter</h3><div class="number">${totalInterns}</div></div>
+                    <div class="stat-card"><h3>Arbetsgivare</h3><div class="number">${this.data.employers.length}</div></div>
+                    <div class="stat-card"><h3>Coacher</h3><div class="number">${this.data.coaches.length}</div></div>
+                `;
+
+                    // Varningar för uppföljning
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const oneWeekFromNow = new Date(today);
+                    oneWeekFromNow.setDate(today.getDate() + 7);
+
+                    const overdue = this.data.interns.filter(i => new Date(i.followupDate) < today);
+                    const upcoming = this.data.interns.filter(i => {
+                        const followupDate = new Date(i.followupDate);
+                        return followupDate >= today && followupDate <= oneWeekFromNow;
+                    });
+
+                    let alertsHTML = '';
+                    if (overdue.length > 0) {
+                        alertsHTML += `<div class="alert danger"><strong>⚠️ ${overdue.length} försenade uppföljningar!</strong><ul>
+                        ${overdue.map(i => `<li>${i.name} (${i.followupDate})</li>`).join('')}
+                    </ul></div>`;
+                    }
+                    if (upcoming.length > 0) {
+                        alertsHTML += `<div class="alert"><strong>📅 ${upcoming.length} uppföljningar inom 7 dagar</strong><ul>
+                        ${upcoming.map(i => `<li>${i.name} (${i.followupDate})</li>`).join('')}
+                    </ul></div>`;
+                    }
+                    document.getElementById('alerts').innerHTML = alertsHTML;
+                },
+
+                renderEmployers() {
+                    // NY: Ordbok för tooltips
+                    const colorMap = {
+                        green: 'Jobb ready',
+                        yellow: 'Kräver extra handledning',
+                        red: 'Lägre språknivå, ren språkpraktik',
+                        blue: 'Inför anställning'
+                    };
+
+                    const search = document.getElementById('searchEmployer').value.toLowerCase();
+                    const branch = document.getElementById('filterBranch').value;
+                    const filtered = this.data.employers.filter(emp =>
+                        (emp.name.toLowerCase().includes(search) || emp.contact.toLowerCase().includes(search)) &&
+                        (!branch || emp.branch === branch)
+                    );
+
+                    document.getElementById('employersBody').innerHTML = filtered.map(emp => {
+                        // NY: Logik för färgprick
+                        let colorDot = '';
+                        if (emp.colorCode) {
+                            const title = colorMap[emp.colorCode] || 'Okänd kod';
+                            colorDot = `<span class="color-dot color-dot-${emp.colorCode}" title="${title}"></span>`;
+                        }
+                        return `
+                    <tr>
+                        <td>${colorDot}<strong>${emp.name}</strong></td><td>${emp.branch}</td><td>${emp.contact}</td><td>${emp.phone || '-'}</td><td>${emp.email || '-'}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-secondary btn-small" onclick="app.openModal('employerModal', '${emp.id}')">Redigera</button>
+                            <button class="btn btn-danger btn-small" onclick="app.deleteItem('employers', '${emp.id}')">Ta bort</button>
+                        </td>
+                    </tr>
+                `}).join('');
+                },
+
+                renderPlacements() {
+                    const search = document.getElementById('searchPlacement').value.toLowerCase();
+                    const statusFilter = document.getElementById('filterStatus').value;
+                    const employerFilter = document.getElementById('filterEmployer').value;
+                    const typeFilter = document.getElementById('filterPlacementType').value; // NY
+
+                    const filtered = this.data.placements.filter(p => {
+                        const employer = this.getEmployer(p.employerId);
+                        const occupiedCount = this.data.interns.filter(i => i.placementId === p.id).length;
+                        const isAvailable = p.total > occupiedCount;
+
+                        const matchesSearch = employer.name.toLowerCase().includes(search) || p.description.toLowerCase().includes(search);
+                        const matchesStatus = !statusFilter || (statusFilter === 'ledig' && isAvailable) || (statusFilter === 'upptagen' && !isAvailable);
+                        const matchesEmployer = !employerFilter || p.employerId === employerFilter;
+                        const matchesType = !typeFilter || employer.type === typeFilter; // NY
+
+                        return matchesSearch && matchesStatus && matchesEmployer && matchesType; // UPPDATERAD
+                    });
+
+                    document.getElementById('placementsBody').innerHTML = filtered.map(p => {
+                        const employer = this.getEmployer(p.employerId);
+                        const occupiedCount = this.data.interns.filter(i => i.placementId === p.id).length;
+                        const availableCount = p.total - occupiedCount;
+                        const status = availableCount > 0 ?
+                            `<span class="badge badge-success">Ledig</span>` :
+                            `<span class="badge badge-danger">Upptagen</span>`;
+                        return `
+                    <tr>
+                        <td>${employer.name}</td><td>${p.description}</td><td>${p.total}</td><td>${availableCount}</td><td>${status}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-secondary btn-small" onclick="app.openModal('placementModal', '${p.id}')">Redigera</button>
+                            <button class="btn btn-danger btn-small" onclick="app.deleteItem('placements', '${p.id}')">Ta bort</button>
+                        </td>
+                    </tr>
+                    `}).join('');
+                },
+
+                renderCoaches() {
+                    document.getElementById('coachesBody').innerHTML = this.data.coaches.map(c => {
+                        const internCount = this.data.interns.filter(i => i.coachId === c.id).length;
+                        return `
+                    <tr>
+                        <td>${c.name}</td><td>${c.email}</td><td>${c.phone || '-'}</td><td>${internCount}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-secondary btn-small" onclick="app.openModal('coachModal', '${c.id}')">Redigera</button>
+                            <button class="btn btn-danger btn-small" onclick="app.deleteItem('coaches', '${c.id}')">Ta bort</button>
+                        </td>
+                    </tr>
+                `}).join('');
+                },
+
+                renderInterns() {
+                    const search = document.getElementById('searchIntern').value.toLowerCase();
+                    const coachFilter = document.getElementById('filterCoach').value;
+                    const statusFilter = document.getElementById('filterInternStatus').value; // NY
+
+                    const filtered = this.data.interns.filter(i =>
+                        i.name.toLowerCase().includes(search) &&
+                        (!coachFilter || i.coachId === coachFilter) &&
+                        // NYTT FILTERBLOCK
+                        (!statusFilter ||
+                            (statusFilter === 'assigned' && i.placementId) ||
+                            (statusFilter === 'unassigned' && !i.placementId))
+                    );
+
+                    document.getElementById('internsBody').innerHTML = filtered.map(i => {
+                        // UPPDATERAD LOGIK FÖR ATT HANTERA SAKNAD PLATS
+                        let employerName = "Ej tilldelad";
+                        if (i.placementId) {
+                            const placement = this.getPlacement(i.placementId);
+                            // Kolla om platsen faktiskt existerar (inte bara default-objektet)
+                            if(placement && placement.id) { 
+                                 const employer = this.getEmployer(placement.employerId);
+                                 employerName = employer.name || 'Okänd arbetsgivare';
+                            } else {
+                                // Praktikant har ett ID till en plats som tagits bort
+                                employerName = '<span style="color:var(--danger)">Plats borttagen</span>';
+                            }
+                        }
+                        const coach = this.getCoach(i.coachId);
+
+                        return `
+                    <tr>
+                        <td>${i.name}</td><td>${coach.name}</td><td>${employerName}</td><td>${i.startDate}</td><td>${i.endDate}</td><td>${i.followupDate}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-secondary btn-small" onclick="app.openModal('internModal', '${i.id}')">Redigera</button>
+                            <button class="btn btn-danger btn-small" onclick="app.deleteItem('interns', '${i.id}')">Ta bort</button>
+                        </td>
+                    </tr>
+                `}).join('');
+                },
+
+                // --- MODAL- OCH FORMULÄRHANTERING ---
+
+                openModal(modalId, id = null) {
+                    const modal = document.getElementById(modalId);
+                    const form = modal.querySelector('form');
+                    form.reset();
+
+                    const titleElement = modal.querySelector('.modal-header h2');
+                    const idInput = form.querySelector('input[type="hidden"]');
+                    idInput.value = id || '';
+
+                    titleElement.textContent = id ? `Redigera ${titleElement.textContent.split(' ')[1]}` : `Ny ${titleElement.textContent.split(' ')[1]}`;
+
+                    // Fyll i formulär om vi redigerar
+                    if (id) {
+                        let itemType = modalId.replace('Modal', 's');
+                        if (itemType === 'coachs') {
+                            itemType = 'coaches';
+                        }
+                        const item = this.data[itemType].find(i => i.id === id);
+                        for (const key in item) {
+                            // Konstruerar ID:t: t.ex. 'employer' + 'Name'
+                            const input = form.querySelector(`#${modalId.replace('Modal', '')}${key.charAt(0).toUpperCase() + key.slice(1)}`);
+                            if (input) {
+                                 input.value = item[key];
+                            }
+                        }
+                        // Särfall för nya fält som inte matchar (t.ex. key 'type' -> id 'employerType')
+                        if (modalId === 'employerModal') {
+                            if (item.type) form.querySelector('#employerType').value = item.type;
+                            if (item.colorCode) form.querySelector('#employerColorCode').value = item.colorCode;
+                        }
+                    }
+
+                    // Särskild logik för dropdowns
+                    if (modalId === 'placementModal') {
+                        this.populateSelect('placementEmployer', this.data.employers, 'Välj arbetsgivare...');
+                    } else if (modalId === 'internModal') {
+                        this.populateSelect('internCoach', this.data.coaches, 'Välj coach...');
+                        
+                        // Hämta alla lediga platser
+                        const availablePlacements = this.data.placements.filter(p => {
+                            const occupied = this.data.interns.filter(i => i.placementId === p.id).length;
+                            return p.total > occupied;
+                        });
+
+                        // Om vi redigerar en praktikant, måste vi också inkludera deras *nuvarande* plats
+                        // i listan, även om den är "full".
+                        let currentPlacement = null;
+                        if(id) {
+                            const intern = this.data.interns.find(i => i.id === id);
+                            if(intern.placementId && !availablePlacements.find(p => p.id === intern.placementId)) {
+                                currentPlacement = this.getPlacement(intern.placementId);
+                                if(currentPlacement.id) { // Lägg bara till om den faktiskt finns
+                                    availablePlacements.push(currentPlacement);
+                                }
+                            }
+                        }
+                        
+                        // ÄNDRAD: Lade till "Ingen plats" som första valbara alternativ
+                        this.populateSelect('internPlacement', availablePlacements, 'Ingen plats', p => `${this.getEmployer(p.employerId).name} - ${p.description}`);
+                    }
+
+                    if (id && modalId === 'internModal') {
+                        document.getElementById('internCoach').value = this.data.interns.find(i => i.id === id).coachId;
+                        document.getElementById('internPlacement').value = this.data.interns.find(i => i.id === id).placementId;
+                    }
+                    if (id && modalId === 'placementModal') {
+                        document.getElementById('placementEmployer').value = this.data.placements.find(p => p.id === id).employerId;
+                    }
+
+                    modal.classList.add('active');
+                },
+
+                closeModal(modalId) {
+                    document.getElementById(modalId).classList.remove('active');
+                },
+
+                saveEmployer(e) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const id = form.employerId.value;
+                    const data = {
+                        id: id || `e${Date.now()}`,
+                        name: form.employerName.value,
+                        branch: form.employerBranch.value,
+                        type: form.employerType.value, // NY
+                        colorCode: form.employerColorCode.value, // NY
+                        contact: form.employerContact.value,
+                        phone: form.employerPhone.value,
+                        email: form.employerEmail.value,
+                        address: form.employerAddress.value,
+                        notes: form.employerNotes.value
+                    };
+                    this.saveItem('employers', data);
+                    this.closeModal('employerModal');
+                },
+
+                savePlacement(e) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const id = form.placementId.value;
+                    const data = {
+                        id: id || `p${Date.now()}`,
+                        employerId: form.placementEmployer.value,
+                        description: form.placementDescription.value,
+                        total: parseInt(form.placementTotal.value)
+                    };
+                    this.saveItem('placements', data);
+                    this.closeModal('placementModal');
+                },
+
+                saveCoach(e) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const id = form.coachId.value;
+                    const data = {
+                        id: id || `c${Date.now()}`,
+                        name: form.coachName.value,
+                        email: form.coachEmail.value,
+                        phone: form.coachPhone.value
+                    };
+                    this.saveItem('coaches', data);
+                    this.closeModal('coachModal');
+                },
+
+                saveIntern(e) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const id = form.internId.value;
+                    const data = {
+                        id: id || `i${Date.now()}`,
+                        name: form.internName.value,
+                        coachId: form.internCoach.value,
+                        placementId: form.internPlacement.value, // Kommer vara "" om "Ingen plats" valts
+                        startDate: form.internStartDate.value,
+                        endDate: form.internEndDate.value,
+                        followupDate: form.internFollowupDate.value,
+                        notes: form.internNotes.value
+                    };
+                    
+                    // Kolla om platsen är full
+                    if (data.placementId) {
+                        const placement = this.getPlacement(data.placementId);
+                        const occupiedCount = this.data.interns.filter(i => i.placementId === data.placementId && i.id !== id).length;
+                        if (occupiedCount >= placement.total) {
+                            alert('Fel: Den valda praktikplatsen är full.');
+                            return; // Avbryt spara
+                        }
+                    }
+
+                    this.saveItem('interns', data);
+                    this.closeModal('internModal');
+                },
+
+                saveItem(itemType, itemData) {
+                    const index = this.data[itemType].findIndex(i => i.id === itemData.id);
+                    if (index > -1) {
+                        this.data[itemType][index] = itemData;
+                    } else {
+                        this.data[itemType].push(itemData);
+                    }
+                    this.saveData();
+                    this.renderAll();
+                },
+
+                deleteItem(itemType, id) {
+                    let relatedItems = false;
+                    let message = 'Är du säker på att du vill ta bort detta objekt?';
+
+                    // Varnar om man tar bort saker som har kopplingar
+                    if (itemType === 'employers') {
+                        const placements = this.data.placements.filter(p => p.employerId === id);
+                        if (placements.length > 0) {
+                            relatedItems = true;
+                            message = `Varning! Om du tar bort denna arbetsgivare tas även ${placements.length} praktikplats(er) bort. Vill du fortsätta?`;
+                        }
+                    } else if (itemType === 'placements') {
+                         const interns = this.data.interns.filter(i => i.placementId === id);
+                         if (interns.length > 0) {
+                             relatedItems = true;
+                            message = `Varning! ${interns.length} praktikant(er) är kopplade till denna plats. De kommer att bli "Ej tilldelade". Vill du fortsätta?`;
+                         }
+                    } else if (itemType === 'coaches') {
+                         const interns = this.data.interns.filter(i => i.coachId === id);
+                         if (interns.length > 0) {
+                            message = `Varning! ${interns.length} praktikant(er) är kopplade till denna coach. De kommer att visas som "Okänd" coach. Vill du fortsätta?`;
+                         }
+                    }
+
+                    if (confirm(message)) {
+                        this.data[itemType] = this.data[itemType].filter(i => i.id !== id);
+
+                        // Hantera kopplingar
+                        if (itemType === 'employers') {
+                            // Ta bort alla platser OCH koppla bort praktikanter från de platserna
+                            const placementsToRemove = this.data.placements.filter(p => p.employerId === id).map(p => p.id);
+                            this.data.placements = this.data.placements.filter(p => p.employerId !== id);
+                            this.data.interns.forEach(intern => {
+                                if (placementsToRemove.includes(intern.placementId)) {
+                                    intern.placementId = '';
+                                }
+                            });
+                        } else if (itemType === 'placements') {
+                            // Koppla bort praktikanter från platsen
+                            this.data.interns.forEach(intern => {
+                                if (intern.placementId === id) {
+                                    intern.placementId = '';
+                                }
+                            });
+                        }
+
+                        this.saveData();
+                        this.renderAll();
+                    }
+                },
+
+                // --- FILTER OCH DROPDOWNS ---
+                updateFilterDropdowns() {
+                    // Unika branscher
+                    const branches = [...new Set(this.data.employers.map(e => e.branch))];
+                    this.populateSelect('filterBranch', branches.map(b => ({ id: b, name: b })), 'Alla branscher');
+
+                    // Arbetsgivare
+                    this.populateSelect('filterEmployer', this.data.employers, 'Alla arbetsgivare');
+
+                    // Coacher
+                    this.populateSelect('filterCoach', this.data.coaches, 'Alla coacher');
+                },
+
+                populateSelect(selectId, items, defaultOptionText, nameFormatter = item => item.name) {
+                    const select = document.getElementById(selectId);
+                    const currentValue = select.value;
+                    select.innerHTML = `<option value="">${defaultOptionText}</option>`;
+                    items.forEach(item => {
+                        select.innerHTML += `<option value="${item.id}">${nameFormatter(item)}</option>`;
+                    });
+                    // Försök att återställa det valda värdet, om det fortfarande finns
+                    select.value = currentValue;
+                }
+            };
+
+            app.init();
+            window.app = app; // Gör app-objektet tillgängligt globalt för onclick-anrop
+        });
+    </script>
+</body>
+
+</html>
